@@ -1,7 +1,7 @@
 import { useEffect, useReducer } from "react";
 import { PlacesContext } from "./PlacesContext";
 import { placesReducer } from "./placesReducer";
-import { getUserLoc, getUserLocation } from "../../helpers";
+import { getUserLocation } from "../../helpers";
 
 export interface PlacesState {
   isLoading: boolean;
@@ -18,13 +18,14 @@ const INITIAL_STATE: PlacesState = {
 };
 
 export const PlacesProvider = ({ children }: Props) => {
-  const { state, dispatch } = useReducer(placesReducer, INITIAL_STATE);
+  const [state, dispatch] = useReducer(placesReducer, INITIAL_STATE);
+
   useEffect(() => {
-    getUserLocation
-      .then(([lng, lat]) => {
-        dispatch({ type: "setUserLocation", payload: [lng, lat] });
-      })
-      .catch(() => {});
+    getUserLocation()
+      .then((lngLat) => dispatch({ type: "setUserLocation", payload: lngLat }))
+      .catch((err) => {
+        console.log(err);
+      });
   }, []);
 
   return (
